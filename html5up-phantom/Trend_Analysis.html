@@ -1,0 +1,173 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<title>Trend Analysis</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="assets/css/main.css" />
+	<noscript>
+		<link rel="stylesheet" href="assets/css/noscript.css" />
+	</noscript>
+	<style>
+		.center-form .form-group {
+			margin-bottom: 1rem;
+		}
+
+		.button-container {
+			display: flex;
+			justify-content: space-between;
+		}
+
+		.button-container button {
+			width: 48%;
+		}
+	</style>
+</head>
+
+<body class="is-preload">
+	<!-- Wrapper -->
+	<div id="wrapper">
+
+		<!-- Header -->
+		<header id="header">
+			<div class="inner">
+
+				<!-- Logo -->
+				<a href="index.html" class="logo">
+					<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">Crime
+						Pulse</span>
+				</a>
+
+				<!-- Nav -->
+				<nav>
+					<ul>
+						<li><a href="#menu">Menu</a></li>
+					</ul>
+				</nav>
+
+			</div>
+		</header>
+
+		<!-- Menu -->
+		<nav id="menu">
+			<h2>Menu</h2>
+			<ul>
+				<li><a href="index.html">Home</a></li>
+				<li><a href="Spatial_Analysis.html">Spatial Analysis</a></li>
+				<li><a href="Trend_Analysis.html">Trend Analysis</a></li>
+				<li><a href="Offence_Analysis.html">Offence Analysis</a></li>
+				<li><a href="Ranking.html">Ranking</a></li>
+				<li><a href="Correlation.html">Correlation</a></li>
+			</ul>
+		</nav>
+
+		<!-- Main -->
+		<div id="main">
+			<div class="inner">
+				<h1>Trend Analysis</h1>
+				<span class="image main"><img src="images/pic13.jpg" alt="" /></span>
+				<div class="center-form">
+					<!-- Select agency 1 dropdown -->
+					<div class="form-group">
+						<label for="agency1">Select Agency 1:</label>
+						<select class="form-control" id="agency1">
+							<option>Select Agency 1</option>
+							<option>Agency 1.1</option>
+							<option>Agency 1.2</option>
+							<option>Agency 1.3</option>
+						</select>
+					</div>
+
+					<!-- Select agency 2 dropdown -->
+					<div class="form-group">
+						<label for="agency2">Select Agency 2:</label>
+						<select class="form-control" id="agency2">
+							<option>Select Agency 2</option>
+							<option>Agency 2.1</option>
+							<option>Agency 2.2</option>
+							<option>Agency 2.3</option>
+						</select>
+					</div>
+
+					<!-- Select crime type dropdown -->
+					<div class="form-group">
+						<label for="crimeType">Select Crime Type:</label>
+						<select class="form-control" id="crimeType">
+							<option>Select Crimetype</option>
+							<option>Crime Type 1</option>
+							<option>Crime Type 2</option>
+							<option>Crime Type 3</option>
+						</select>
+					</div>
+
+					<!-- Select year dropdown -->
+					<div class="form-group">
+						<label for="year">Select Year:</label>
+						<select class="form-control" id="year">
+							<option>Select year</option>
+							<option>2020</option>
+							<option>2021</option>
+							<option>2022</option>
+						</select>
+					</div>
+
+					<!-- Buttons -->
+					<div class="button-container">
+						<button type="button" class="button primary" id="fetchData">Fetch Data</button>
+						<button type="button" class="button" id="reset">Reset</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Footer -->
+		<footer id="footer">
+			<div class="inner">
+				<section>
+					<h2>Get in touch</h2>
+					<form method="post" action="#">
+						<div class="fields">
+							<div class="field half">
+								<input type="text" name="name" id="name" placeholder="Name" />
+							</div>
+							<div class="field half">
+								<input type="email" name="email" id="email" placeholder="Email" />
+							</div>
+							<div class="field">
+								<textarea name="message" id="message" placeholder="Message"></textarea>
+							</div>
+						</div>
+						<ul class="actions">
+							<li><input type="submit" value="Send" class="primary" /></li>
+						</ul>
+					</form>
+				</section>
+				<section>
+					<h2>Follow</h2>
+					<ul class="icons">
+						<li><a href="https://twitter.com/UF" class="icon brands style2 fa-twitter"><span
+									class="label">Twitter</span></a></li>
+						<li><a href="https://www.facebook.com/uflorida" class="icon brands style2 fa-facebook-f"><span
+									class="label">Facebook</span></a></li>
+						<li><a href="https://www.instagram.com/uflorida/" class="icon brands style2 fa-instagram"><span
+									class="label">Instagram</span></a></li>
+						<li><a href="mailto:info@ufonline.ufl.edu" class="icon solid style2 fa-envelope"><span
+									class="label">Email</span></a></li>
+					</ul>
+				</section>
+			</div>
+		</footer>
+
+	</div>
+
+	<!-- Scripts -->
+	<script src="assets/js/jquery.min.js"></script>
+	<script src="assets/js/browser.min.js"></script>
+	<script src="assets/js/breakpoints.min.js"></script>
+	<script src="assets/js/util.js"></script>
+	<script src="assets/js/main.js"></script>
+
+</body>
+
+</html>

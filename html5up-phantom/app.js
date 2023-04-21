@@ -4,10 +4,14 @@ const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const session = require("express-session");
 const http = require("http");
+const path = require("path");
 const oracledb = require("oracledb");
 const app = express();
 
 app.set("view engine", "ejs");
+app.use(express.static(__dirname + "/public"));
+
+console.log(__dirname + "\\public");
 
 app.use(
   bodyParser.urlencoded({
@@ -40,13 +44,44 @@ const connectDB = async (Query) => {
   }
 };
 
-connectDB("").then((res) => console.log(res));
+// connectDB("SELECT * FROM student").then((res) => console.log(res));
 
-app.route("/SpatialAnalysis")
-  .get(async function(req, res) {
-    res.render("Spatial_Analysis")
+app
+  .route("/")
+  .get(async (req, res) => {
+    res.render("index");
   })
-  .post();
+  .post(async (req, res) => {
+    console.log("hello");
+    connectDB(
+      // `SELECT * FROM LOCATION=${location} WHERE YEAR=${year} and TIME=${day}`
+      "SELECT COUNT(*) as Tuples FROM Student"
+    ).then((result) => {
+      console.log(result);
+      res.render("index", { result: result.rows[0][0] });
+    });
+  });
+
+app
+  .route("/SpatialAnalysis")
+  .get(async (req, res) => {
+    res.render("Spatial_Analysis");
+  })
+  .post(async (req, res) => {
+    const { location, time, date } = req.body;
+    const year = new Date(date).getFullYear();
+    var day = "day";
+    if (Number(time.slice(0, 2)) >= 12) {
+      day = "night";
+    }
+    connectDB(
+      // `SELECT * FROM LOCATION=${location} WHERE YEAR=${year} and TIME=${day}`
+      "SELECT * FROM STUDENT"
+    ).then((result) => {
+      console.log(result);
+      res.render("Spatial_Analysis", { result: result });
+    });
+  });
 
 let port = 5000;
 

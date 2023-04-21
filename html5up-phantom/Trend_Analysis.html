@@ -123,7 +123,7 @@
 					<!-- Buttons -->
 					<div class="button-container">
 						<button type="button" class="btn btn-primary">Fetch Data</button>
-						<button type="button" class="btn btn-secondary">Reset</button>
+						<button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
 					</div>
 
 				</div>
@@ -176,7 +176,14 @@
 	<script src="assets/js/breakpoints.min.js"></script>
 	<script src="assets/js/util.js"></script>
 	<script src="assets/js/main.js"></script>
-
+	<script>
+		function resetForm() {
+			document.getElementById("agency1").selectedIndex = 0;
+			document.getElementById("agency2").selectedIndex = 0;
+			document.getElementById("crimeType").selectedIndex = 0;
+			document.getElementById("year").selectedIndex = 0;
+		}
+	</script>
 </body>
 
 </html>

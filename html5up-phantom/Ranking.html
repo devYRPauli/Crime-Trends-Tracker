@@ -139,7 +139,7 @@
 					<div class="button-container">
 						<div class="button-container">
 							<button type="button" class="btn btn-primary">Fetch Data</button>
-							<button type="button" class="btn btn-secondary">Reset</button>
+							<button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
 						</div>
 					</div>
 				</div>
@@ -196,6 +196,14 @@
 	<script src="assets/js/breakpoints.min.js"></script>
 	<script src="assets/js/util.js"></script>
 	<script src="assets/js/main.js"></script>
+	<script>
+		function resetForm() {
+			const radioButtons = document.querySelectorAll('input[type="radio"]');
+			radioButtons.forEach((radio) => {
+				radio.checked = false;
+			});
+		}
+	</script>
 </body>
 
 </html>

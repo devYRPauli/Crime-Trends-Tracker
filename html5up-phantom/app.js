@@ -54,7 +54,6 @@ app
   .post(async (req, res) => {
     console.log("hello");
     connectDB(
-      // `SELECT * FROM LOCATION=${location} WHERE YEAR=${year} and TIME=${day}`
       "SELECT COUNT(*) as Tuples FROM Student"
     ).then((result) => {
       console.log(result);

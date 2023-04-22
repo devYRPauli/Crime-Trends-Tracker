@@ -49,13 +49,11 @@ const connectDB = async (Query) => {
 app
   .route("/")
   .get(async (req, res) => {
-    res.render("index");
+    res.render("index", { result: "" });
   })
   .post(async (req, res) => {
     console.log("hello");
-    connectDB(
-      "SELECT COUNT(*) as Tuples FROM Student"
-    ).then((result) => {
+    connectDB("SELECT COUNT(*) as Tuples FROM Student").then((result) => {
       console.log(result);
       res.render("index", { result: result.rows[0][0] });
     });
@@ -64,7 +62,7 @@ app
 app
   .route("/SpatialAnalysis")
   .get(async (req, res) => {
-    res.render("Spatial_Analysis");
+    res.render("Spatial_Analysis", { result: 0 });
   })
   .post(async (req, res) => {
     const { location, time, date } = req.body;
@@ -79,6 +77,85 @@ app
     ).then((result) => {
       console.log(result);
       res.render("Spatial_Analysis", { result: result });
+    });
+  });
+
+app
+  .route("/TrendAnalysis")
+  .get(async (req, res) => {
+    res.render("Trend_Analysis", { result: 0 });
+  })
+  .post(async (req, res) => {
+    const { agency1, agency2, crimeType, year } = req.body;
+    connectDB(
+      // `SELECT * FROM LOCATION=${location} WHERE YEAR=${year} and TIME=${day}`
+      "SELECT * FROM STUDENT"
+    ).then((result) => {
+      console.log(result);
+      res.render("Trend_Analysis", { result: result });
+    });
+  });
+
+app
+  .route("/OffenceAnalysis")
+  .get(async (req, res) => {
+    res.render("Offence_Analysis", { result: 0 });
+  })
+  .post(async (req, res) => {
+    const { location, time, date } = req.body;
+    const year = new Date(date).getFullYear();
+    var day = "day";
+    if (Number(time.slice(0, 2)) >= 12) {
+      day = "night";
+    }
+    connectDB(
+      // `SELECT * FROM LOCATION=${location} WHERE YEAR=${year} and TIME=${day}`
+      "SELECT * FROM STUDENT"
+    ).then((result) => {
+      console.log(result);
+      res.render("Offence_Analysis", { result: result });
+    });
+  });
+
+app
+  .route("/Ranking")
+  .get(async (req, res) => {
+    res.render("Ranking", { result: 0 });
+  })
+  .post(async (req, res) => {
+    const {
+      state,
+      agencies,
+      weapons,
+      victim,
+      offender,
+      crimeType,
+      age,
+      sex,
+      race,
+    } = req.body;
+    connectDB(
+      // `SELECT * FROM LOCATION=${location} WHERE YEAR=${year} and TIME=${day}`
+      "SELECT * FROM STUDENT"
+    ).then((result) => {
+      console.log(result);
+      res.render("Ranking", { result: result });
+    });
+  });
+
+app
+  .route("/Correlation")
+  .get(async (req, res) => {
+    res.render("Correlation", { result: 0 });
+  })
+  .post(async (req, res) => {
+    const { age, time, state, lineChart, barChart, pieChart } = req.body;
+    connectDB(
+      // `SELECT * FROM LOCATION=${location} WHERE YEAR=${year} and TIME=${day}`
+      "SELECT * FROM STUDENT"
+    ).then((result) => {
+      console.log(result);
+      res.render("Correlation", { result: result });
     });
   });
 

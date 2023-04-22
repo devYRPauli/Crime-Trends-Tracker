@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Spatial Analysis</title>
+    <title>Trend Analysis</title>
     <meta charset="utf-8" />
     <meta
       name="viewport"
@@ -77,48 +77,73 @@
       <!-- Main -->
       <div id="main">
         <div class="inner">
-          <h1>Spatial Analysis</h1>
+          <h1>Trend Analysis</h1>
           <span class="image main"><img src="images/pic13.jpg" alt="" /></span>
 
           <!-- Form container -->
           <div class="form-container">
-            <form method="post" action="/SpatialAnalysis">
-              <!-- Location selector dropdown -->
-              <label for="location" style="font-size: larger"
-                >Select Location:</label
+            <form method="post" action="/TrendAnalysis">
+              <!-- Select agency 1 dropdown -->
+              <label for="agency1" style="font-size: larger"
+                >Select Agency 1:</label
               >
               <select
                 class="form-control"
-                id="location"
+                id="agency1"
                 style="width: 50%"
-                name="location"
+                name="agency1"
               >
-                <option>Select Location</option>
-                <option>Location 1</option>
-                <option>Location 2</option>
-                <option>Location 3</option>
-                <option>Location 4</option>
+                <option>Select Agency 1</option>
+                <option>Agency 1.1</option>
+                <option>Agency 1.2</option>
+                <option>Agency 1.3</option>
               </select>
 
-              <!-- Date picker -->
-              <label for="date" style="font-size: larger">Select Date:</label>
-              <input
-                type="date"
+              <!-- Select agency 2 dropdown -->
+              <label for="agency2" style="font-size: larger"
+                >Select Agency 2:</label
+              >
+              <select
                 class="form-control"
-                id="date"
+                id="agency2"
                 style="width: 50%"
-                name="date"
-              />
+                name="agency2"
+              >
+                <option>Select Agency 2</option>
+                <option>Agency 2.1</option>
+                <option>Agency 2.2</option>
+                <option>Agency 2.3</option>
+              </select>
 
-              <!-- Time picker -->
-              <label for="time" style="font-size: larger">Select Time:</label>
-              <input
-                type="time"
+              <!-- Select crime type dropdown -->
+              <label for="crimeType" style="font-size: larger"
+                >Select Crime Type:</label
+              >
+              <select
                 class="form-control"
-                id="time"
+                id="crimeType"
                 style="width: 50%"
-                name="time"
-              />
+                name="crimeType"
+              >
+                <option>Select Crime Type</option>
+                <option>Crime Type 1</option>
+                <option>Crime Type 2</option>
+                <option>Crime Type 3</option>
+              </select>
+
+              <!-- Select year dropdown -->
+              <label for="year" style="font-size: larger">Select Year:</label>
+              <select
+                class="form-control"
+                id="year"
+                style="width: 50%"
+                name="year"
+              >
+                <option>Select Year</option>
+                <option>2020</option>
+                <option>2021</option>
+                <option>2022</option>
+              </select>
 
               <!-- Buttons -->
               <div class="button-container">
@@ -126,7 +151,7 @@
                   Fetch Data
                 </button>
                 <button
-                  type="submit"
+                  type="button"
                   class="btn btn-secondary"
                   onclick="resetForm()"
                 >
@@ -201,10 +226,6 @@
                   ><span class="label">Instagram</span></a
                 >
               </li>
-              <!-- <li><a href="#" class="icon brands style2 fa-dribbble"><span class="label">Dribbble</span></a></li> -->
-              <!-- <li><a href="#" class="icon brands style2 fa-github"><span class="label">GitHub</span></a></li> -->
-              <!-- <li><a href="#" class="icon brands style2 fa-500px"><span class="label">500px</span></a></li> -->
-              <!-- <li><a href="#" class="icon solid style2 fa-phone"><span class="label">Phone</span></a></li> -->
               <li>
                 <a
                   href="mailto:info@ufonline.ufl.edu"
@@ -226,9 +247,10 @@
     <script src="assets/js/main.js"></script>
     <script>
       function resetForm() {
-        document.getElementById("location").selectedIndex = 0;
-        document.getElementById("date").value = "";
-        document.getElementById("time").value = "";
+        document.getElementById("agency1").selectedIndex = 0;
+        document.getElementById("agency2").selectedIndex = 0;
+        document.getElementById("crimeType").selectedIndex = 0;
+        document.getElementById("year").selectedIndex = 0;
       }
     </script>
   </body>

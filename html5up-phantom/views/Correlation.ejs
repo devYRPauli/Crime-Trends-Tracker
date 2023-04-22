@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Spatial Analysis</title>
+    <title>Correlation</title>
     <meta charset="utf-8" />
     <meta
       name="viewport"
@@ -12,29 +12,30 @@
       <link rel="stylesheet" href="assets/css/noscript.css" />
     </noscript>
     <style>
-      .form-container {
-        text-align: center;
-      }
-
-      .form-container input,
-      .form-container select {
-        display: block;
-        margin: 0 auto;
-        margin-bottom: 5%;
-      }
-
-      .form-container .button-container {
+      .sections-wrapper {
         display: flex;
-        justify-content: space-between;
-        margin-top: 20px;
-        width: 50%;
-        margin-left: auto;
-        margin-right: auto;
+        flex-direction: column;
+        align-items: center;
       }
 
-      .form-container .button-container button {
+      .sections-container {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 5rem;
+      }
+
+      .sections-container section {
+        flex: 1;
+      }
+
+      .button-container {
         box-sizing: border-box;
-        width: 48%;
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 1rem;
+        width: auto;
         height: 80px;
       }
     </style>
@@ -65,7 +66,7 @@
       <nav id="menu">
         <h2>Menu</h2>
         <ul>
-          <li><a href="/">Home</a></li>
+          <li><a href="index.html">Home</a></li>
           <li><a href="/SpatialAnalysis">Spatial Analysis</a></li>
           <li><a href="/TrendAnalysis">Trend Analysis</a></li>
           <li><a href="/OffenceAnalysis">Offence Analysis</a></li>
@@ -77,64 +78,92 @@
       <!-- Main -->
       <div id="main">
         <div class="inner">
-          <h1>Spatial Analysis</h1>
+          <h1>Correlation</h1>
           <span class="image main"><img src="images/pic13.jpg" alt="" /></span>
+          <form method="post" action="/Correlation" style="overflow: hidden">
+            <div class="sections-wrapper">
+              <div class="sections-container">
+                <!-- Section 1 -->
+                <section>
+                  <h2>Parameter</h2>
+                  <div class="form-group">
+                    <input
+                      type="radio"
+                      id="option1"
+                      name="age"
+                      value="option1"
+                    />
+                    <label for="option1">Age</label>
+                  </div>
+                  <div class="form-group">
+                    <input
+                      type="radio"
+                      id="option2"
+                      name="time"
+                      value="option2"
+                    />
+                    <label for="option2">Time(Day/Night)</label>
+                  </div>
+                  <div class="form-group">
+                    <input
+                      type="radio"
+                      id="option3"
+                      name="state"
+                      value="option3"
+                    />
+                    <label for="option3">State</label>
+                  </div>
+                </section>
 
-          <!-- Form container -->
-          <div class="form-container">
-            <form method="post" action="/SpatialAnalysis">
-              <!-- Location selector dropdown -->
-              <label for="location" style="font-size: larger"
-                >Select Location:</label
-              >
-              <select
-                class="form-control"
-                id="location"
-                style="width: 50%"
-                name="location"
-              >
-                <option>Select Location</option>
-                <option>Location 1</option>
-                <option>Location 2</option>
-                <option>Location 3</option>
-                <option>Location 4</option>
-              </select>
-
-              <!-- Date picker -->
-              <label for="date" style="font-size: larger">Select Date:</label>
-              <input
-                type="date"
-                class="form-control"
-                id="date"
-                style="width: 50%"
-                name="date"
-              />
-
-              <!-- Time picker -->
-              <label for="time" style="font-size: larger">Select Time:</label>
-              <input
-                type="time"
-                class="form-control"
-                id="time"
-                style="width: 50%"
-                name="time"
-              />
-
+                <!-- Section 2 -->
+                <section>
+                  <h2>Chart</h2>
+                  <div class="form-group">
+                    <input
+                      type="radio"
+                      id="option4"
+                      name="lineChart"
+                      value="option4"
+                    />
+                    <label for="option4">Line Chart</label>
+                  </div>
+                  <div class="form-group">
+                    <input
+                      type="radio"
+                      id="option5"
+                      name="barChart"
+                      value="option5"
+                    />
+                    <label for="option5">Bar Chart</label>
+                  </div>
+                  <div class="form-group">
+                    <input
+                      type="radio"
+                      id="option6"
+                      name="pieChart"
+                      value="option6"
+                    />
+                    <label for="option6">Pie Chart</label>
+                  </div>
+                </section>
+              </div>
               <!-- Buttons -->
               <div class="button-container">
-                <button type="submit" class="btn btn-primary">
-                  Fetch Data
-                </button>
-                <button
-                  type="submit"
-                  class="btn btn-secondary"
-                  onclick="resetForm()"
-                >
-                  Reset
-                </button>
+                <div class="button-container">
+                  <button type="submit" class="btn btn-primary">
+                    Fetch Data
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    onclick="resetForm()"
+                  >
+                    Reset
+                  </button>
+                </div>
               </div>
-            </form>
-          </div>
+            </div>
+          </form>
         </div>
       </div>
 
@@ -226,9 +255,10 @@
     <script src="assets/js/main.js"></script>
     <script>
       function resetForm() {
-        document.getElementById("location").selectedIndex = 0;
-        document.getElementById("date").value = "";
-        document.getElementById("time").value = "";
+        const radioButtons = document.querySelectorAll("input[type='radio']");
+        for (let radioButton of radioButtons) {
+          radioButton.checked = false;
+        }
       }
     </script>
   </body>

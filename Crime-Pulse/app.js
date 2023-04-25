@@ -293,7 +293,7 @@ ORDER BY num_incidents DESC
 app
   .route("/Correlation")
   .get(async (req, res) => {
-    res.render("Correlation", { data: 0 });
+    res.render("Correlation", { x: 0, y: 0, xLabel: 0, yLabel: 0 });
   })
   .post(async (req, res) => {
     const {
@@ -307,24 +307,32 @@ app
 
     var prompt1 = "";
     var prompt2 = "";
+    var xLabel = "";
+    var yLabel = "";
 
     if (victim_age1) {
       prompt1 = victim_age1;
+      xLabel = "Victim Age";
     }
     if (offender_age1) {
       prompt1 = offender_age1;
+      xLabel = "Offender Age";
     }
     if (hour1) {
       prompt1 = hour1;
+      xLabel = "Hour";
     }
     if (victim_age2) {
       prompt2 = victim_age2;
+      yLabel = "Victim Age";
     }
     if (offender_age2) {
       prompt2 = offender_age2;
+      yLabel = "Offender Age";
     }
     if (hour2) {
       prompt2 = hour2;
+      yLabel = "Hour";
     }
 
     console.table(req.body);
@@ -346,13 +354,14 @@ ORDER BY DBMS_RANDOM.RANDOM
 FETCH FIRST 200 ROWS ONLY
 `
     ).then((result) => {
-      const data = [];
+      const x = [];
+      const y = [];
 
       result.rows.forEach((ele) => {
-        data.push({ x: ele[0], y: ele[1] });
+        x.push(ele[0]);
+        y.push(ele[1]);
       });
-      console.log(data);
-      res.render("Correlation", { data: data });
+      res.render("Correlation", { x: x, y: y, xLabel: xLabel, yLabel: yLabel });
     });
   });
 

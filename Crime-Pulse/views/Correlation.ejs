@@ -117,7 +117,7 @@
 
                 <!-- Section 2 -->
                 <section>
-                  <h2>Chart</h2>
+                  <h2>Section 2</h2>
                   <div class="form-group">
                     <input
                       type="radio"
@@ -202,7 +202,7 @@
         </div>
       </div>
 
-      <% if (data != 0) { %>
+      <% if (x != 0 && y != 0) { %>
       <div>
         <canvas
           id="myChart"
@@ -308,9 +308,16 @@
 
       const ctx = document.getElementById("myChart");
 
-      const data = "<%- data %>";
+      var xPoints = "<%- x %>";
+      xPoints = xPoints.split(",");
+      var yPoints = "<%- y %>";
+      yPoints = yPoints.split(",");
 
-      console.log(data.split(",")[0].y);
+      const data = [];
+
+      for (let i = 0; i < xPoints.length; i++) {
+        data.push({ x: xPoints[i], y: yPoints[i] });
+      }
 
       new Chart(ctx, {
         type: "scatter",
@@ -319,8 +326,24 @@
           datasets: [
             {
               label: "Number of Crimes",
-              data: data.split(","),
+              data: data,
               backgroundColor: "rgb(255, 99, 132)",
+              options: {
+                scales: {
+                  y: {
+                    type: "linear",
+                    display: true,
+                    position: "left",
+                    title: { text: "<%- yLabel %>", display: true },
+                  },
+                  x: {
+                    type: "linear",
+                    display: true,
+                    position: "bottom",
+                    title: { text: "<%- xLabel %>", display: true },
+                  },
+                },
+              },
             },
           ],
         },

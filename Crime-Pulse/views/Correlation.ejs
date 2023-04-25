@@ -319,6 +319,36 @@
         data.push({ x: xPoints[i], y: yPoints[i] });
       }
 
+      // new Chart(ctx, {
+      //   type: "scatter",
+      //   data: {
+      //     // labels: labels.split(","),
+      //     datasets: [
+      //       {
+      //         label: "Number of Crimes",
+      //         data: data,
+      //         backgroundColor: "rgb(255, 99, 132)",
+      //         options: {
+      //           scales: {
+      //             y: {
+      //               type: "linear",
+      //               display: true,
+      //               position: "left",
+      //               title: { text: "<%- yLabel %>", display: true },
+      //             },
+      //             x: {
+      //               type: "linear",
+      //               display: true,
+      //               position: "bottom",
+      //               title: { text: "<%- xLabel %>", display: true },
+      //             },
+      //           },
+      //         },
+      //       },
+      //     ],
+      //   },
+      // });
+
       new Chart(ctx, {
         type: "scatter",
         data: {
@@ -328,24 +358,32 @@
               label: "Number of Crimes",
               data: data,
               backgroundColor: "rgb(255, 99, 132)",
-              options: {
-                scales: {
-                  y: {
-                    type: "linear",
-                    display: true,
-                    position: "left",
-                    title: { text: "<%- yLabel %>", display: true },
-                  },
-                  x: {
-                    type: "linear",
-                    display: true,
-                    position: "bottom",
-                    title: { text: "<%- xLabel %>", display: true },
-                  },
-                },
-              },
             },
           ],
+        },
+        options: {
+          scales: {
+            y: {
+              type: "linear",
+              display: true,
+              position: "left",
+            },
+            x: {
+              type: "linear",
+              display: true,
+              position: "bottom",
+            },
+          },
+          plugins: {
+            title: {
+              display: false,
+              text: "Scatter Plot",
+            },
+            subtitle: {
+              display: true,
+              text: "X: <%- xLabel %>, Y: <%- yLabel %>",
+            },
+          },
         },
       });
     </script>

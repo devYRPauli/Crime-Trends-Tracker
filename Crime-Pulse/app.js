@@ -67,9 +67,9 @@ app
   })
   .post(async (req, res) => {
     console.log("hello");
-    connectDB(
-      "SELECT SUM(num_tuples) FROM (SELECT COUNT(*) as num_tuples FROM AGENCY UNION SELECT COUNT(*) as num_tuples FROM ARRESTEE UNION SELECT COUNT(*) as num_tuples FROM INCIDENT UNION SELECT COUNT(*) as num_tuples FROM OFFENDEDBY UNION SELECT COUNT(*) as num_tuples FROM OFFENDER UNION SELECT COUNT(*) as num_tuples FROM OFFENSE UNION SELECT COUNT(*) as num_tuples FROM TARGETOF UNION SELECT COUNT(*) as num_tuples FROM VICTIM UNION SELECT COUNT(*) as num_tuples FROM VICTIMINJURYTYPE)"
-    ).then((result) => {
+    connectDB(`
+    SELECT SUM(num_tuples) FROM (SELECT COUNT(*) as num_tuples FROM AGENCY UNION SELECT COUNT(*) as num_tuples FROM ARRESTEE UNION SELECT COUNT(*) as num_tuples FROM INCIDENT UNION SELECT COUNT(*) as num_tuples FROM OFFENDEDBY UNION SELECT COUNT(*) as num_tuples FROM OFFENDER UNION SELECT COUNT(*) as num_tuples FROM OFFENSE UNION SELECT COUNT(*) as num_tuples FROM TARGETOF UNION SELECT COUNT(*) as num_tuples FROM VICTIM UNION SELECT COUNT(*) as num_tuples FROM VICTIMINJURYTYPE)
+    `).then((result) => {
       console.log(result);
       res.render("index", { result: result.rows[0][0] });
     });

@@ -54,7 +54,7 @@ const connectDB = async (Query) => {
 const width = 1000; // define width and height of canvas
 const height = 1000;
 const chartCallback = (ChartJS) => {
-  console.log("chart built");
+  console.log("Chart ready to use.");
 };
 const nodeChartCanvas = new ChartJSNodeCanvas({ width, height, chartCallback });
 

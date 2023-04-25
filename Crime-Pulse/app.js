@@ -32,10 +32,10 @@ app.use(
   })
 );
 
-oracledb.initOracleClient({
-  libDir:
-    "D:\\Downloads\\instantclient-basic-windows.x64-21.9.0.0.0dbru\\instantclient_21_9",
-});
+// oracledb.initOracleClient({
+//   libDir:
+//     "D:\\Downloads\\instantclient-basic-windows.x64-21.9.0.0.0dbru\\instantclient_21_9",
+// });
 
 const connectDB = async (Query) => {
   try {

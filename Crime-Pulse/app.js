@@ -33,8 +33,8 @@ app.use(
 const connectDB = async (Query) => {
   try {
     const connection = await oracledb.getConnection({
-      user: "pandey.yash",
-      password: "7La7ofRRpsWEPeXjr5q63hTL",
+      user: "bmishra1",
+      password: "pIruNRcMxV58dD2mUH57kiio",
       connectionString: "oracle.cise.ufl.edu/orcl",
     });
     const result = await connection.execute(Query);
@@ -53,7 +53,7 @@ app
   })
   .post(async (req, res) => {
     console.log("hello");
-    connectDB("SELECT COUNT(*) as Tuples FROM Student").then((result) => {
+    connectDB("SELECT * FROM AGENCY").then((result) => {
       console.log(result);
       res.render("index", { result: result.rows[0][0] });
     });

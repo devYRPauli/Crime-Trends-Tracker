@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Offence Analysis</title>
+    <title>Sector Analysis</title>
     <meta charset="utf-8" />
     <meta
       name="viewport"
@@ -28,9 +28,9 @@
       .left-buttons button,
       .right-buttons button {
         margin-bottom: 10px;
-        width: 200px;
-        height: 80px;
-        font-size: 14px;
+        width: 400px;
+        height: 150px;
+        font-size: 18px;
         text-align: center;
         display: flex;
         justify-content: center;
@@ -72,58 +72,107 @@
           <li><a href="/">Home</a></li>
           <li><a href="/SpatialAnalysis">Spatial Analysis</a></li>
           <li><a href="/TrendAnalysis">Trend Analysis</a></li>
-          <li><a href="/OffenceAnalysis">Offence Analysis</a></li>
-          <li><a href="/Ranking">Ranking</a></li>
+          <li><a href="/OffenceAnalysis">Sector Analysis</a></li>
           <li><a href="/Correlation">Correlation</a></li>
+          <li><a href="/Statistics">Statistics</a></li>
         </ul>
       </nav>
 
       <!-- Main -->
       <div id="main">
         <div class="inner">
-          <h1>Offence Analysis</h1>
+          <h1>Sector Analysis</h1>
           <span class="image main"><img src="images/pic13.jpg" alt="" /></span>
-          <div class="buttons-container">
-            <div class="left-buttons">
-              <button
-                class="button primary"
-                onclick="button1(/* Your Query Here */)"
-              >
-                Button 1
-              </button>
-              <button class="button primary" onclick="button2()">
-                Button 2
-              </button>
-              <button class="button primary" onclick="button3()">
-                Button 3
-              </button>
-              <button class="button primary" onclick="button4()">
-                Button 4
-              </button>
-              <button class="button primary" onclick="button5()">
-                Button 5
-              </button>
+          <form method="post" action="/SectorAnalysis">
+            <div class="buttons-container">
+              <div class="left-buttons">
+                <button
+                  class="button primary"
+                  type="submit"
+                  name="offenceType"
+                  value="offense.offense_category"
+                >
+                  Offense Type
+                </button>
+                <button
+                  class="button primary"
+                  type="submit"
+                  name="offenderSex"
+                  value="arrestee.sex"
+                >
+                  Offender Sex
+                </button>
+                <button
+                  class="button primary"
+                  type="submit"
+                  name="offenderRace"
+                  value="arrestee.race"
+                >
+                  Offender Race
+                </button>
+                <button
+                  class="button primary"
+                  type="submit"
+                  name="offenderEthnicity"
+                  value="arrestee.ethnicity"
+                >
+                  Offender Ethnicity
+                </button>
+              </div>
+              <div class="right-buttons">
+                <button
+                  class="button primary"
+                  type="submit"
+                  name="locationType"
+                  value="location_type"
+                >
+                  Location Type
+                </button>
+                <button
+                  class="button primary"
+                  type="submit"
+                  name="victimSex"
+                  value="victim.sex"
+                >
+                  Victim Sex
+                </button>
+                <button
+                  class="button primary"
+                  type="submit"
+                  name="victimRace"
+                  value="victim.race"
+                >
+                  Victim Race
+                </button>
+                <button
+                  class="button primary"
+                  type="submit"
+                  name="victimEthnicity"
+                  value="victim.ethnicity"
+                >
+                  Victim Ethnicity
+                </button>
+              </div>
             </div>
-            <div class="right-buttons">
-              <button class="button primary" onclick="button6()">
-                Button 6
-              </button>
-              <button class="button primary" onclick="button7()">
-                Button 7
-              </button>
-              <button class="button primary" onclick="button8()">
-                Button 8
-              </button>
-              <button class="button primary" onclick="button9()">
-                Button 9
-              </button>
-              <button class="button primary" onclick="button10()">
-                Button 10
-              </button>
-            </div>
-          </div>
+          </form>
         </div>
       </div>
+
+      <% if (data != 0 && labels != 0) { %>
+      <div>
+        <canvas
+          id="myChart"
+          style="
+            max-height: 650px;
+            max-width: 650px;
+            margin: auto;
+            text-align: center;
+            height: 650px;
+            width: 650px;
+          "
+        ></canvas>
+      </div>
+      <% } %>
 
       <!-- Footer -->
       <footer id="footer">
@@ -203,16 +252,39 @@
     <script src="assets/js/breakpoints.min.js"></script>
     <script src="assets/js/util.js"></script>
     <script src="assets/js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
-      const button1 = async (Query) => {
-        const connection = await oracledb.getConnection({
-          user: "pandey.yash",
-          password: "7La7ofRRpsWEPeXjr5q63hTL",
-          connectionString: "oracle.cise.ufl.edu/orcl",
-        });
-        const result = await connection.execute(Query);
-        return result;
-      };
+      const ctx = document.getElementById("myChart");
+
+      const data = "<%- data %>";
+      const labels = "<%- labels %>";
+
+      new Chart(ctx, {
+        type: "pie",
+        data: {
+          labels: labels.split(","),
+          datasets: [
+            {
+              label: "Number: ",
+              data: data.split(","),
+              backgroundColor: [
+                "#ffb6c1",
+                "#aec6cf",
+                "#77dd77",
+                "#b19cd9",
+                "#fdfd96",
+                "#ffb337",
+                "#afeeee",
+                "#e6e6fa",
+                "#ffdab9",
+                "#98fb98",
+              ],
+              hoverOffset: 4,
+            },
+          ],
+        },
+      });
     </script>
   </body>
 </html>

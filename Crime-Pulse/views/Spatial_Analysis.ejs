@@ -63,16 +63,16 @@
 
       <!-- Menu -->
       <nav id="menu">
-        <h2>Menu</h2>
-        <ul>
-          <li><a href="/">Home</a></li>
-          <li><a href="/SpatialAnalysis">Spatial Analysis</a></li>
-          <li><a href="/TrendAnalysis">Trend Analysis</a></li>
-          <li><a href="/OffenceAnalysis">Offence Analysis</a></li>
-          <li><a href="/Ranking">Ranking</a></li>
-          <li><a href="/Correlation">Correlation</a></li>
-        </ul>
-      </nav>
+      <h2>Menu</h2>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/SpatialAnalysis">Spatial Analysis</a></li>
+        <li><a href="/TrendAnalysis">Trend Analysis</a></li>
+        <li><a href="/OffenceAnalysis">Sector Analysis</a></li>
+        <li><a href="/Correlation">Correlation</a></li>
+        <li><a href="/Statistics">Statistics</a></li>
+      </ul>
+    </nav>
 
       <!-- Main -->
       <div id="main">
@@ -94,36 +94,23 @@
                 name="location"
               >
                 <option>Select State</option>
-                <option>California</option>
-                <option>Florida</option>
-                <option>Hawaii</option>
-                <option>New York</option>
-                <option>Texas</option>
+                <option>California-CA</option>
+                <option>Florida-FL</option>
+                <option>Hawaii-HI</option>
+                <option>New York-NY</option>
+                <option>Texas-TX</option>
               </select>
 
               <!-- Date picker -->
-              <label for="date" style="font-size: larger">Select Month:</label>
-              <select
+              <label for="date" style="font-size: larger">Select Date:</label>
+              <input
                 type="date"
                 class="form-control"
                 id="date"
                 style="width: 50%"
-                name="date"
+                name="fullDate"
               >
-                <option>Select Month</option>
-                <option>January</option>
-                <option>February</option>
-                <option>March</option>
-                <option>April</option>
-                <option>May</option>
-                <option>June</option>
-                <option>July</option>
-                <option>August</option>
-                <option>September</option>
-                <option>October</option>
-                <option>November</option>
-                <option>December</option>
-              </select>
+              </input>
               <!-- Time picker -->
               <label for="time" style="font-size: larger">Select Time:</label>
               <input
@@ -132,6 +119,7 @@
                 id="time"
                 style="width: 50%"
                 name="time"
+                
               />
 
               <!-- Buttons -->
@@ -152,9 +140,16 @@
         </div>
       </div>
 
-      <div>
-        <canvas id="myChart"></canvas>
+      <% if (data != 0 && labels != 0) { %>
+       <div>
+        <canvas
+          id="myChart"
+          style="max-height: 650px; max-width: 650px; margin: auto; text-align: center; height: 650px; width: 650px;"
+        ></canvas>
       </div>
+      <% } %>
+
+      
 
       <!-- Footer -->
       <footer id="footer">
@@ -243,23 +238,35 @@
         document.getElementById("time").value = "";
       }
 
+
+
       const ctx = document.getElementById("myChart");
 
       const data = "<%- data %>";
       const labels = "<%- labels %>";
 
       new Chart(ctx, {
-        type: "pie",
+        type: "bar",
         data: {
           labels: labels.split(","),
           datasets: [
             {
-              label: "My First Dataset",
+              label: "Number of Crimes",
               data: data.split(","),
               backgroundColor: [
-                "rgb(255, 99, 132)",
-                "rgb(54, 162, 235)",
-                "rgb(255, 205, 86)",
+                "rgb(255, 204, 204)",
+"rgb(255, 218, 185)",
+"rgb(175, 238, 238)",
+"rgb(238, 130, 238)",
+"rgb(230, 230, 250)",
+"rgb(255, 229, 204)",
+"rgb(204, 255, 230)",
+"rgb(204, 204, 255)",
+"rgb(255, 255, 204)",
+"rgb(255, 204, 204)",
+
+
+
               ],
               hoverOffset: 4,
             },

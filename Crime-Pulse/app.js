@@ -78,59 +78,32 @@ app
 app
   .route("/SpatialAnalysis")
   .get(async (req, res) => {
-    res.render("Spatial_Analysis", { result: 0 });
+    res.render("Spatial_Analysis", { data: 0, labels: 0 });
   })
   .post(async (req, res) => {
-    const { location, time, date } = req.body;
-    const year = new Date(date).getFullYear();
-    var day = "day";
-    if (Number(time.slice(0, 2)) >= 12) {
-      day = "night";
-    }
+    var { location, time, fullDate } = req.body;
+
+    const date = new Date(fullDate).getDate() + 1;
+    const months = new Date(fullDate).getMonth() + 1;
+    location = location.split("-")[1];
+    time = time.split(":")[0];
+
     connectDB(
       // `SELECT * FROM LOCATION=${location} WHERE YEAR=${year} and TIME=${day}`
       `
-      SELECT location_type, SUM(num_incidents) as num_incidents FROM
-(SELECT * FROM
-    (SELECT location_type, COUNT(*) as num_incidents
-    FROM (
-        SELECT agency_id, state
-        FROM agency
-        WHERE state='TX'
-        ) agency
-        INNER JOIN 
-        (SELECT *
-        FROM incident
-        WHERE hour_of<12 AND EXTRACT(MONTH FROM date_of)=3) incident
-        ON agency.agency_id = incident.agency_id
-        INNER JOIN 
-        offense
-        ON incident.incident_id = offense.incident_id
-    GROUP BY location_type
-    ORDER BY num_incidents DESC
-    FETCH FIRST 3 ROWS ONLY)
-UNION
-SELECT 'Other/Unknown' as location_type, SUM(num_incidents) as num_incidents
-FROM(
-    SELECT location_type, COUNT(*) as num_incidents
-    FROM (
-        SELECT agency_id, state
-        FROM agency
-        WHERE state='TX'
-        ) agency
-        INNER JOIN 
-        (SELECT *
-        FROM incident
-        WHERE hour_of<12 AND EXTRACT(MONTH FROM date_of)=3) incident
-        ON agency.agency_id = incident.agency_id
-        INNER JOIN 
-        offense
-        ON incident.incident_id = offense.incident_id
-    GROUP BY location_type
-    ORDER BY num_incidents DESC
-    OFFSET 3 ROWS))
-GROUP BY location_type
-ORDER BY num_incidents DESC
+SELECT offense_category, COUNT(*) as num_offenses
+FROM agency
+INNER JOIN
+incident
+ON agency.agency_id = incident.agency_id
+INNER JOIN
+offense
+ON offense.incident_id = incident.incident_id
+WHERE agency.state='${location}' 
+AND EXTRACT(MONTH FROM date_of)=${months} 
+AND EXTRACT(DAY FROM date_of)=${date}
+AND hour_of = ${time}
+GROUP BY offense.offense_category
       `
     ).then(async (result) => {
       console.log(result);
@@ -157,149 +130,325 @@ ORDER BY num_incidents DESC
 app
   .route("/TrendAnalysis")
   .get(async (req, res) => {
-    res.render("Trend_Analysis", { result: 0 });
+    res.render("Trend_Analysis", { data: 0 });
   })
   .post(async (req, res) => {
-    const { agency1, agency2, crimeType, year } = req.body;
+    var { state, crimeType, year } = req.body;
+
+    state = state.split("-")[1];
+
     connectDB(
-      // `SELECT * FROM LOCATION=${location} WHERE YEAR=${year} and TIME=${day}`
-      "SELECT * FROM STUDENT"
+      `SELECT EXTRACT(MONTH FROM date_of) as month, COUNT(*)
+FROM agency
+INNER JOIN
+incident
+ON agency.agency_id = incident.agency_id
+INNER JOIN
+offense
+ON offense.incident_id = incident.incident_id
+WHERE state='${state}' AND offense_category='${crimeType}'
+AND EXTRACT(YEAR FROM date_of)=${year}
+GROUP BY EXTRACT(MONTH FROM date_of)
+ORDER BY month
+`
     ).then((result) => {
-      console.log(result);
-      res.render("Trend_Analysis", { result: result });
+      // console.log(result);
+
+      const data = [];
+
+      result.rows.forEach((element, index) => {
+        data.push(element[1]);
+      });
+
+      // result.
+      res.render("Trend_Analysis", { data: data });
     });
   });
 
 app
-  .route("/OffenceAnalysis")
+  .route("/SectorAnalysis")
   .get(async (req, res) => {
-    res.render("Offence_Analysis", { result: 0 });
-  })
-  .post(async (req, res) => {
-    const { location, time, date } = req.body;
-    const year = new Date(date).getFullYear();
-    var day = "day";
-    if (Number(time.slice(0, 2)) >= 12) {
-      day = "night";
-    }
-    connectDB(
-      // `SELECT * FROM LOCATION=${location} WHERE YEAR=${year} and TIME=${day}`
-      "SELECT * FROM STUDENT"
-    ).then((result) => {
-      console.log(result);
-      res.render("Offence_Analysis", { result: result });
-    });
-  });
-
-app
-  .route("/Ranking")
-  .get(async (req, res) => {
-    res.render("Ranking", { result: 0 });
+    res.render("Offence_Analysis", { data: 0, labels: 0 });
   })
   .post(async (req, res) => {
     const {
-      state,
-      agencies,
-      weapons,
-      victim,
-      offender,
-      crimeType,
-      age,
-      sex,
-      race,
+      offenceType,
+      offenderSex,
+      offenderRace,
+      offenderEthnicity,
+      locationType,
+      victimSex,
+      victimRace,
+      victimEthnicity,
     } = req.body;
+
+    var prompt = "";
+    var small_prompt = "";
+    var unknown_name = "";
+    var N = 0;
+
+    if (offenceType) {
+      prompt = offenceType;
+      small_prompt = "offense_category";
+      unknown_name = "Other Offenses";
+    }
+    if (offenderSex) {
+      prompt = offenderSex;
+      small_prompt = "sex";
+      unknown_name = "F";
+    }
+    if (offenderRace) {
+      prompt = offenderRace;
+      small_prompt = "race";
+      unknown_name = "Unknown";
+    }
+    if (offenderEthnicity) {
+      prompt = offenderEthnicity;
+      small_prompt = "ethnicity";
+      unknown_name = "Unknown";
+    }
+    if (locationType) {
+      prompt = locationType;
+      small_prompt = "location_type";
+      unknown_name = "Other/Unknown";
+    }
+    if (victimSex) {
+      prompt = victimSex;
+      small_prompt = "sex";
+      unknown_name = "U";
+    }
+    if (victimRace) {
+      prompt = victimRace;
+      small_prompt = "race";
+      unknown_name = "Not Specified";
+    }
+    if (victimEthnicity) {
+      prompt = victimEthnicity;
+      small_prompt = "ethnicity";
+      unknown_name = "Unknown";
+    }
+
+    console.log(prompt, small_prompt, unknown_name);
+
     connectDB(
       // `SELECT * FROM LOCATION=${location} WHERE YEAR=${year} and TIME=${day}`
-      "SELECT * FROM STUDENT"
+      `
+      SELECT ${small_prompt}, SUM(num_incidents) as num_incidents FROM
+(SELECT * FROM
+    (SELECT ${prompt} as ${small_prompt}, COUNT(*) as num_incidents
+    FROM
+        agency
+        INNER JOIN 
+        incident
+        ON agency.agency_id = incident.agency_id
+        INNER JOIN 
+        offense
+        ON incident.incident_id = offense.incident_id
+        INNER JOIN
+        victim
+        ON victim.incident_id = incident.incident_id
+        INNER JOIN
+        arrestee
+        ON arrestee.incident_id = incident.incident_id
+    GROUP BY ${prompt}
+    ORDER BY num_incidents DESC
+    FETCH FIRST 10 ROWS ONLY)
+UNION
+SELECT '${unknown_name}' as ${small_prompt}, SUM(num_incidents) as num_incidents
+FROM(
+    SELECT ${prompt}, COUNT(*) as num_incidents
+    FROM
+        agency
+        INNER JOIN 
+        incident
+        ON agency.agency_id = incident.agency_id
+        INNER JOIN 
+        offense
+        ON incident.incident_id = offense.incident_id
+        INNER JOIN
+        victim
+        ON victim.incident_id = incident.incident_id
+        INNER JOIN
+        arrestee
+        ON arrestee.incident_id = incident.incident_id
+    GROUP BY ${prompt}
+    ORDER BY num_incidents DESC
+    OFFSET 10 ROWS))
+GROUP BY ${small_prompt}
+ORDER BY num_incidents DESC
+
+      `
     ).then((result) => {
-      console.log(result);
-      res.render("Ranking", { result: result });
+      const labels = [];
+      const data = [];
+
+      result.rows.forEach((ele) => {
+        labels.push(ele[0]);
+        data.push(ele[1]);
+      });
+      res.render("Offence_Analysis", { labels: labels, data: data });
     });
   });
 
 app
   .route("/Correlation")
   .get(async (req, res) => {
-    res.render("Correlation", { result: 0 });
+    res.render("Correlation", { data: 0 });
   })
   .post(async (req, res) => {
-    const { age, time, state, lineChart, barChart, pieChart } = req.body;
+    const {
+      victim_age1,
+      offender_age1,
+      hour1,
+      victim_age2,
+      offender_age2,
+      hour2,
+    } = req.body;
+
+    var prompt1 = "";
+    var prompt2 = "";
+
+    if (victim_age1) {
+      prompt1 = victim_age1;
+    }
+    if (offender_age1) {
+      prompt1 = offender_age1;
+    }
+    if (hour1) {
+      prompt1 = hour1;
+    }
+    if (victim_age2) {
+      prompt2 = victim_age2;
+    }
+    if (offender_age2) {
+      prompt2 = offender_age2;
+    }
+    if (hour2) {
+      prompt2 = hour2;
+    }
+
+    console.table(req.body);
+    console.log(prompt1, prompt2);
     connectDB(
-      // `SELECT * FROM LOCATION=${location} WHERE YEAR=${year} and TIME=${day}`
-      "SELECT * FROM STUDENT"
+      `SELECT CAST(${prompt1} as INT) as offender_age, CAST(${prompt2} as INT) as victim_age
+FROM incident
+INNER JOIN
+victim
+ON victim.incident_id = incident.incident_id
+INNER JOIN
+arrestee
+ON arrestee.incident_id = incident.incident_id
+WHERE arrestee.age > 0 
+AND victim.age != 'NS' AND victim.age != 'BB'
+AND victim.age != 'NN' AND victim.age != 'NB'
+AND victim.age != 0
+ORDER BY DBMS_RANDOM.RANDOM
+FETCH FIRST 200 ROWS ONLY
+`
     ).then((result) => {
-      console.log(result);
-      res.render("Correlation", { result: result });
+      const data = [];
+
+      result.rows.forEach((ele) => {
+        data.push({ x: ele[0], y: ele[1] });
+      });
+      console.log(data);
+      res.render("Correlation", { data: data });
     });
   });
 
-app.route("/Chart").get(async (req, res) => {
-  const configuration = {
-    type: "line", // for line chart
-    data: {
-      labels: [150, 300, 450, 600, 750, 900, 1050, 1200, 1350, 1500],
-      datasets: [
-        {
-          label: "sample 1",
-          data: [100, 43],
-          fill: false,
-          borderColor: ["rgba(255, 99, 132, 1)"],
-          borderWidth: 1,
-          xAxisID: "xAxis1", //define top or bottm axis ,modifies on scale
-        },
-        {
-          label: "sample 2",
-          data: [72, 83],
-          fill: false,
-          borderColor: ["rgba(265, 99, 132, 1)"],
-          borderWidth: 1,
-          xAxisID: "xAxis1",
-        },
-        {
-          label: "sample3",
-          data: [30, 56],
-          fill: false,
-          borderColor: ["rgba(235, 99, 122, 1)"],
-          borderWidth: 1,
-          xAxisID: "xAxis1",
-        },
-      ],
-    },
-    options: {
-      scales: {
-        xAxes: [
-          {
-            id: "xAxis1",
-            position: "bottom",
-            type: "category",
-          },
-          {
-            id: "xAxis2",
-            position: "top",
-            type: "category",
-            ticks: {
-              callback: function (value, index, values) {
-                return xLabels[index]; // gives points of top x axis
-              },
-            },
-          },
-        ],
-        yAxes: [
-          {
-            display: true,
-            ticks: {
-              max: 200,
-              stepSize: 10, //defines y axis step scale
-            },
-          },
-        ],
-      },
-    },
-  };
+app
+  .route("/Statistics")
+  .get(async (req, res) => {
+    res.render("Statistics", {
+      min: 0,
+      avg: 0,
+      max: 0,
+      labels: 0,
+      yAxisParameter: 0,
+    });
+  })
+  .post(async (req, res) => {
+    const { OffenderAge, VictimAge, Hour, Weapon, Sex, Race } = req.body;
 
-  const dataUrl = await nodeChartCanvas.renderToDataURL(configuration); // converts chart to image
-  res.send(dataUrl);
-});
+    var parameter1 = "";
+    var parameter2 = "";
+    var yAxisParameter = "";
+
+    if (OffenderAge == "OffenderAge") {
+      parameter1 = "arrestee.age";
+      yAxisParameter = "Offender's Age";
+    }
+    if (VictimAge == "VictimAge") {
+      parameter1 = "victim.age";
+      yAxisParameter = "Victim's Age";
+    }
+    if (Hour == "Hour") {
+      parameter1 = "incident.hour_of";
+      yAxisParameter = "Hour";
+    }
+
+    if (Weapon == "Weapon") {
+      parameter2 = "weapon";
+      yAxisParameter = "Weapon";
+    }
+    if (Sex == "Offense Type") {
+      parameter2 = "offense.offense_category";
+      yAxisParameter = "Offense Type";
+    }
+    if (Race == "Location Type") {
+      parameter2 = "offense.location_type";
+      yAxisParameter = "Location Type";
+    }
+
+    connectDB(
+      // `SELECT * FROM LOCATION=${location} WHERE YEAR=${year} and TIME=${day}`
+      `SELECT ${parameter2}, MIN(CAST(${parameter1} as INT)) as min_age, AVG(CAST(${parameter1} as INT)) as avg_age, MAX(CAST(${parameter1} as INT)) as max_age
+FROM agency
+INNER JOIN
+incident
+ON agency.agency_id = incident.agency_id
+INNER JOIN
+offense
+ON offense.incident_id = incident.incident_id
+INNER JOIN
+arrestee
+ON arrestee.incident_id = incident.incident_id
+INNER JOIN
+victim
+ON victim.incident_id = incident.incident_id
+WHERE arrestee.age > 0
+AND victim.age != 'NS' AND victim.age != 'BB'
+AND victim.age != 'NN' AND victim.age != 'NB'
+AND victim.age != 0
+GROUP BY ${parameter2}
+`
+    ).then((result) => {
+      // console.log(result);
+      const min = [];
+      const avg = [];
+      const max = [];
+      const labels = [];
+
+      result.rows.forEach((ele) => {
+        console.log(ele);
+        if (ele[0] == "Sex Offenses, Non-forcible") {
+          return;
+        }
+        labels.push(ele[0]);
+        min.push(ele[1]);
+        avg.push(ele[2]);
+        max.push(ele[3]);
+      });
+
+      res.render("Statistics", {
+        min: min,
+        avg: avg,
+        max: max,
+        labels: labels,
+        yAxisParameter: yAxisParameter,
+      });
+    });
+  });
 
 let port = 5000;
 

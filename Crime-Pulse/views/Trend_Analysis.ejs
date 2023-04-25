@@ -68,9 +68,9 @@
           <li><a href="/">Home</a></li>
           <li><a href="/SpatialAnalysis">Spatial Analysis</a></li>
           <li><a href="/TrendAnalysis">Trend Analysis</a></li>
-          <li><a href="/OffenceAnalysis">Offence Analysis</a></li>
-          <li><a href="/Ranking">Ranking</a></li>
+          <li><a href="/OffenceAnalysis">Sector Analysis</a></li>
           <li><a href="/Correlation">Correlation</a></li>
+          <li><a href="/Statistics">Statistics</a></li>
         </ul>
       </nav>
 
@@ -91,14 +91,14 @@
                 class="form-control"
                 id="agency1"
                 style="width: 50%"
-                name="agency1"
+                name="state"
               >
                 <option>Select State</option>
-                <option>California</option>
-                <option>Florida</option>
-                <option>Hawaii</option>
-                <option>New York</option>
-                <option>Texas</option>
+                <option>California-CA</option>
+                <option>Florida-FL</option>
+                <option>Hawaii-HI</option>
+                <option>New York-NY</option>
+                <option>Texas-TX</option>
               </select>
 
               <!-- Select agency 2 dropdown -->
@@ -128,9 +128,11 @@
                 name="crimeType"
               >
                 <option>Select Crime Type</option>
-                <option>Homicide</option>
-                <option>Crime Type 2</option>
-                <option>Crime Type 3</option>
+                <option>Homicide Offenses</option>
+                <option>Arson</option>
+                <option>Kidnapping/Abduction</option>
+                <option>Robbery</option>
+                <option>Sex Offenses</option>
               </select>
 
               <!-- Select year dropdown -->
@@ -142,9 +144,9 @@
                 name="year"
               >
                 <option>Select Year</option>
-                <option>2020</option>
+                <!-- <option>2020</option> -->
                 <option>2021</option>
-                <option>2022</option>
+                <!-- <option>2022</option> -->
               </select>
 
               <!-- Buttons -->
@@ -165,11 +167,19 @@
         </div>
       </div>
 
-      <% if (result != 0) { %>
+      <% if (data != 0) { %>
       <div>
-        <% result.metaData.forEach(element=> { %>
-        <h1><%= element.name %></h1>
-        <% }) %>
+        <canvas
+          id="myChart"
+          style="
+            max-height: 650px;
+            max-width: 650px;
+            margin: auto;
+            text-align: center;
+            height: 650px;
+            width: 650px;
+          "
+        ></canvas>
       </div>
       <% } %>
 
@@ -247,6 +257,8 @@
     <script src="assets/js/breakpoints.min.js"></script>
     <script src="assets/js/util.js"></script>
     <script src="assets/js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
       function resetForm() {
         document.getElementById("agency1").selectedIndex = 0;
@@ -254,6 +266,47 @@
         document.getElementById("crimeType").selectedIndex = 0;
         document.getElementById("year").selectedIndex = 0;
       }
+
+      const ctx = document.getElementById("myChart");
+      // const Utils = ChartUtils.init();
+
+      const data = "<%- data %>";
+      // const labels = Utils.months({ count: 12 });
+
+      new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+          ],
+          datasets: [
+            {
+              label: "Number of Crimes",
+              data: data.split(","),
+              borderColor: ["rgb(255, 204, 204)"],
+              hoverOffset: 4,
+            },
+          ],
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
+          },
+        },
+      });
     </script>
   </body>
 </html>

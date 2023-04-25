@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@sgratzl/chartjs-chart-boxplot": "^4.1.2",
     "body-parser": "^1.20.2",
     "chart.js": "^4.2.1",
     "chartjs-node-canvas": "^4.1.6",

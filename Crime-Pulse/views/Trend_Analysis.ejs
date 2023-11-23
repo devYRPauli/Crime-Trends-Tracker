@@ -117,38 +117,22 @@
                 <option>Agency 2.3</option>
               </select> -->
 
-              <!-- Select crime type dropdown -->
-              <label for="crimeType" style="font-size: larger"
-                >Select Crime Type:</label
+              <!-- Crime Type dropdown -->
+              <label for="crime_category" style="font-size: larger"
+                >Please select Crime Category:</label
               >
               <select
                 class="form-control"
-                id="crimeType"
+                id="crime_category"
                 style="width: 50%"
-                name="crimeType"
+                name="crime_category"
               >
-                <option>Select Crime Type</option>
+                <option>Select Crime Category</option>
+                <option>Drug/Narcotic Offenses</option>
+                <option>Extortion/Blackmail</option>
                 <option>Homicide Offenses</option>
-                <option>Arson</option>
-                <option>Kidnapping/Abduction</option>
-                <option>Robbery</option>
                 <option>Sex Offenses</option>
-              </select>
-
-              <!-- Select year dropdown -->
-              <label for="year" style="font-size: larger">Select Year:</label>
-              <select
-                class="form-control"
-                id="year"
-                style="width: 50%"
-                name="year"
-              >
-                <option>Select Year</option>
-                <!-- <option>2020</option> -->
-                <!-- <option>2020</option> -->
-                <option>2021</option>
-                <!-- <option>2022</option> -->
-                <!-- <option>2022</option> -->
+                <option>Weapon Law Violations</option>
               </select>
 
               <!-- Buttons -->
@@ -174,12 +158,12 @@
         <canvas
           id="myChart"
           style="
-            max-height: 650px;
-            max-width: 650px;
+            max-height: 950px;
+            max-width: 850px;
             margin: auto;
             text-align: center;
-            height: 650px;
-            width: 650px;
+            height: 950px;
+            width: 850px;
           "
         ></canvas>
       </div>
@@ -272,36 +256,53 @@
       const ctx = document.getElementById("myChart");
       // const Utils = ChartUtils.init();
 
-      const data = "<%- data %>";
+      const day_time = "<%- data[0] %>";
+      const night_time = "<%- data[1] %>";
       // const labels = Utils.months({ count: 12 });
 
       new Chart(ctx, {
-        type: "line",
+        type: "bar",
         data: {
           labels: [
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December",
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+            20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
+            37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52,
           ],
+
           datasets: [
             {
-              label: "Number of Crimes",
-              data: data.split(","),
-              borderColor: ["rgb(255, 204, 204)"],
+              label: "Day Time",
+              data: day_time.split(","),
+              borderColor: ["red"],
+              hoverOffset: 4,
+            },
+            {
+              label: "night Time",
+              data: night_time.split(","),
+              borderColor: ["blue"],
               hoverOffset: 4,
             },
           ],
         },
         options: {
+          indexAxis: "y",
+          // Elements options apply to all of the options unless overridden in a dataset
+          // In this case, we are setting the border of each horizontal bar to be 2px wide
+          elements: {
+            bar: {
+              borderWidth: 2,
+            },
+          },
+          responsive: true,
+          plugins: {
+            legend: {
+              position: "right",
+            },
+            title: {
+              display: true,
+              text: "Day and night Crime Rate for the selected State",
+            },
+          },
           scales: {
             y: {
               beginAtZero: true,

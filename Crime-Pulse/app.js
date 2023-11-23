@@ -76,53 +76,76 @@ app
   });
 
 app
-  .route("/SpatialAnalysis")
+  .route("/CrimeTrendPercentages")
   .get(async (req, res) => {
-    res.render("Spatial_Analysis", { data: 0, labels: 0 });
+    res.render("Spatial_Analysis", {
+      changes_state_1: "",
+      changes_state_2: "",
+      location_1: "",
+      location_2: "",
+      category: "",
+    });
   })
   .post(async (req, res) => {
-    var { location, time, fullDate } = req.body;
+    var { location_1, location_2, crime_category } = req.body;
 
-    const date = new Date(fullDate).getDate() + 1;
-    const months = new Date(fullDate).getMonth() + 1;
-    location = location.split("-")[1];
-    time = time.split(":")[0];
+    location_1 = location_1.split("-")[1];
+    location_2 = location_2.split("-")[1];
 
     connectDB(
-      // `SELECT * FROM LOCATION=${location} WHERE YEAR=${year} and TIME=${day}`
       `
-SELECT offense_category, COUNT(*) as num_offenses
-FROM agency
-INNER JOIN
-incident
-ON agency.agency_id = incident.agency_id
-INNER JOIN
-offense
-ON offense.incident_id = incident.incident_id
-WHERE agency.state='${location}' 
-AND EXTRACT(MONTH FROM date_of)=${months} 
-AND EXTRACT(DAY FROM date_of)=${date}
-AND hour_of = ${time}
-GROUP BY offense.offense_category
+SELECT 
+    State,
+    Offense_Category,
+    Month,
+    Offense_Count,
+    Previous_Month_Count,
+    CASE 
+        WHEN Previous_Month_Count IS NULL THEN NULL
+        ELSE (Offense_Count - Previous_Month_Count) / Previous_Month_Count * 100 
+    END AS Percentage_Change
+FROM (
+    SELECT 
+        mo.State,
+        mo.Offense_Category,
+        mo.Month,
+        mo.Offense_Count,
+        LAG(mo.Offense_Count, 1) OVER (PARTITION BY mo.State, mo.Offense_Category ORDER BY mo.Month) AS Previous_Month_Count
+    FROM (
+        SELECT 
+            a.State,
+            o.Offense_Category,
+            TO_CHAR(inc.Date_OF, 'MM-YYYY') AS Month,
+            COUNT(*) AS Offense_Count
+        FROM Incident inc
+        JOIN Agency a ON inc.Agency_ID = a.Agency_ID
+        JOIN Offense o ON inc.Incident_ID = o.Incident_ID
+        WHERE EXTRACT(YEAR FROM inc.Date_OF) = 2021
+              AND a.State IN ('${location_1}', '${location_2}')
+              AND o.Offense_Category = '${crime_category}'
+        GROUP BY a.State, o.Offense_Category, TO_CHAR(inc.Date_OF, 'MM-YYYY')
+    ) mo
+) final
+ORDER BY State, Offense_Category, Month
       `
     ).then(async (result) => {
-      console.log(result);
+      const changes_state_1 = [];
+      const changes_state_2 = [];
 
-      const data = [];
-      const labels = [];
+      for (let i = 1; i < 12; i++) {
+        changes_state_1.push(result.rows[i][result.rows[i].length - 1]);
+      }
 
-      result.rows.forEach((element, index) => {
-        data.push(element[1]);
-      });
-
-      result.rows.forEach((element, index) => {
-        // console.log(element[0]);
-        labels.push(element[0]);
-      });
+      for (let i = 13; i < 24; i++) {
+        changes_state_2.push(result.rows[i][result.rows[i].length - 1]);
+      }
 
       res.render("Spatial_Analysis", {
-        data: data,
-        labels: labels,
+        changes_state_1: changes_state_1,
+        changes_state_2: changes_state_2,
+        location_1: location_1,
+        location_2: location_2,
+        category: crime_category,
       });
     });
   });
@@ -133,34 +156,83 @@ app
     res.render("Trend_Analysis", { data: 0 });
   })
   .post(async (req, res) => {
-    var { state, crimeType, year } = req.body;
+    var { state, crime_category } = req.body;
 
     state = state.split("-")[1];
 
     connectDB(
-      `SELECT EXTRACT(MONTH FROM date_of) as month, COUNT(*)
-FROM agency
-INNER JOIN
-incident
-ON agency.agency_id = incident.agency_id
-INNER JOIN
-offense
-ON offense.incident_id = incident.incident_id
-WHERE state='${state}' AND offense_category='${crimeType}'
-AND EXTRACT(YEAR FROM date_of)=${year}
-GROUP BY EXTRACT(MONTH FROM date_of)
-ORDER BY month
+      `WITH DaytimeCrimes AS (
+    SELECT 
+        a.State,
+        TO_CHAR(inc.Date_OF, 'MM-YYYY') AS Month,
+        TO_CHAR(inc.Date_OF, 'WW') AS Week,
+        COUNT(*) AS Daytime_Crime_Count
+    FROM Incident inc
+    JOIN Offense o ON inc.Incident_ID = o.Incident_ID
+    JOIN Agency a ON inc.Agency_ID = a.Agency_ID
+    WHERE EXTRACT(YEAR FROM inc.Date_OF) = 2021
+          AND a.State IN ('${state}')
+          AND inc.Hour_OF >= 6 AND inc.Hour_OF < 18
+          AND o.Offense_Category IN ('${crime_category}')
+    GROUP BY a.State, TO_CHAR(inc.Date_OF, 'MM-YYYY'), TO_CHAR(inc.Date_OF, 'WW')
+),
+NighttimeCrimes AS (
+    SELECT 
+        a.State,
+        TO_CHAR(inc.Date_OF, 'MM-YYYY') AS Month,
+        TO_CHAR(inc.Date_OF, 'WW') AS Week,
+        COUNT(*) AS Nighttime_Crime_Count
+    FROM Incident inc
+    JOIN Offense o ON inc.Incident_ID = o.Incident_ID
+    JOIN Agency a ON inc.Agency_ID = a.Agency_ID
+    WHERE EXTRACT(YEAR FROM inc.Date_OF) = 2021
+          AND a.State IN ('${state}')
+          AND (inc.Hour_OF < 6 OR inc.Hour_OF >= 18)
+          AND o.Offense_Category IN ('${crime_category}')
+    GROUP BY a.State, TO_CHAR(inc.Date_OF, 'MM-YYYY'), TO_CHAR(inc.Date_OF, 'WW')
+)
+SELECT 
+    dc.State,
+    dc.Month,
+    dc.Week,
+    COALESCE(dc.Daytime_Crime_Count, 0) AS Weekly_Daytime_Crimes,
+    COALESCE(nc.Nighttime_Crime_Count, 0) AS Weekly_Nighttime_Crimes
+FROM DaytimeCrimes dc
+FULL OUTER JOIN NighttimeCrimes nc 
+    ON dc.State = nc.State AND dc.Month = nc.Month AND dc.Week = nc.Week
+ORDER BY dc.State, dc.Month, dc.Week
+
 `
     ).then((result) => {
       // console.log(result);
+      day_time = [];
+      night_time = [];
+      console.log(result);
+      // res.send(result);
 
-      const data = [];
-
-      result.rows.forEach((element, index) => {
-        data.push(element[1]);
+      for (let i = 0; i < result.rows.length - 1; i += 2) {
+        day_time.push(
+          result.rows[i][result.rows[i].length - 2] +
+            result.rows[i + 1][result.rows[i + 1].length - 2]
+        );
+        night_time.push(
+          -1 *
+            (result.rows[i][result.rows[i].length - 1] +
+              result.rows[i + 1][result.rows[i + 1].length - 1])
+        );
+      }
+      result.rows.forEach((ele) => {
+        day_time.push(ele[ele.length - 2]);
+        night_time.push(-1 * ele[ele.length - 1]);
       });
 
-      // result.
+      const data = [day_time, night_time];
+
+      // result.rows.forEach((element, index) => {
+      //   data.push(element[1]);
+      // });
+
+      // // result.
       res.render("Trend_Analysis", { data: data });
     });
   });
@@ -354,6 +426,7 @@ ORDER BY DBMS_RANDOM.RANDOM
 FETCH FIRST 200 ROWS ONLY
 `
     ).then((result) => {
+      console.log(result);
       const x = [];
       const y = [];
 

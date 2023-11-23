@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Spatial Analysis</title>
+    <title>Crime Trend Percentages</title>
     <meta charset="utf-8" />
     <meta
       name="viewport"
@@ -63,35 +63,35 @@
 
       <!-- Menu -->
       <nav id="menu">
-      <h2>Menu</h2>
-      <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/SpatialAnalysis">Spatial Analysis</a></li>
-        <li><a href="/TrendAnalysis">Trend Analysis</a></li>
-        <li><a href="/SectorAnalysis">Sector Analysis</a></li>
-        <li><a href="/Correlation">Correlation</a></li>
-        <li><a href="/Statistics">Statistics</a></li>
-      </ul>
-    </nav>
+        <h2>Menu</h2>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/CrimeTrendPercentages">Crime Trend Percentages</a></li>
+          <li><a href="/TrendAnalysis">Trend Analysis</a></li>
+          <li><a href="/SectorAnalysis">Sector Analysis</a></li>
+          <li><a href="/Correlation">Correlation</a></li>
+          <li><a href="/Statistics">Statistics</a></li>
+        </ul>
+      </nav>
 
       <!-- Main -->
       <div id="main">
         <div class="inner">
-          <h1>Spatial Analysis</h1>
+          <h1>Crime Trend Percentages</h1>
           <span class="image main"><img src="images/pic13.jpg" alt="" /></span>
 
           <!-- Form container -->
           <div class="form-container">
-            <form method="post" action="/SpatialAnalysis">
+            <form method="post" action="/CrimeTrendPercentages">
               <!-- Location selector dropdown -->
               <label for="location" style="font-size: larger"
-                >Select State:</label
+                >Select State 1:</label
               >
               <select
                 class="form-control"
                 id="location"
                 style="width: 50%"
-                name="location"
+                name="location_1"
               >
                 <option>Select State</option>
                 <option>California-CA</option>
@@ -101,28 +101,40 @@
                 <option>Texas-TX</option>
               </select>
 
-              <!-- Date picker -->
-              <label for="date" style="font-size: larger">Select Date:</label>
-              <input
-                type="date"
-                class="form-control"
-                id="date"
-                style="width: 50%"
-                name="fullDate"
-                min="2021-01-01"
-                max="2021-12-31"
+              <label for="location" style="font-size: larger"
+                >Select State 2 (Please do not select the same state):</label
               >
-              </input>
-              <!-- Time picker -->
-              <label for="time" style="font-size: larger">Select Time:</label>
-              <input
-                type="time"
+              <select
                 class="form-control"
-                id="time"
+                id="location"
                 style="width: 50%"
-                name="time"
-                
-              />
+                name="location_2"
+              >
+                <option>Select State</option>
+                <option>California-CA</option>
+                <option>Florida-FL</option>
+                <option>Hawaii-HI</option>
+                <option>New York-NY</option>
+                <option>Texas-TX</option>
+              </select>
+
+              <!-- Crime Type dropdown -->
+              <label for="crime_category" style="font-size: larger"
+                >Please select Crime Category:</label
+              >
+              <select
+                class="form-control"
+                id="crime_category"
+                style="width: 50%"
+                name="crime_category"
+              >
+                <option>Select Crime Category</option>
+                <option>Drug/Narcotic Offenses</option>
+                <option>Extortion/Blackmail</option>
+                <option>Homicide Offenses</option>
+                <option>Sex Offenses</option>
+                <option>Weapon Law Violations</option>
+              </select>
 
               <!-- Buttons -->
               <div class="button-container">
@@ -142,16 +154,22 @@
         </div>
       </div>
 
-      <% if (data != 0 && labels != 0) { %>
-       <div>
+      <% if (changes_state_1 != "" && changes_state_2 != "" && location_1 != ""
+      && location_2 != "" && category != "") { %>
+      <div>
         <canvas
           id="myChart"
-          style="max-height: 650px; max-width: 650px; margin: auto; text-align: center; height: 650px; width: 650px;"
+          style="
+            max-height: 650px;
+            max-width: 650px;
+            margin: auto;
+            text-align: center;
+            height: 650px;
+            width: 650px;
+          "
         ></canvas>
       </div>
       <% } %>
-
-      
 
       <!-- Footer -->
       <footer id="footer">
@@ -240,36 +258,41 @@
         document.getElementById("time").value = "";
       }
 
-
-
       const ctx = document.getElementById("myChart");
 
-      const data = "<%- data %>";
-      const labels = "<%- labels %>";
+      const changes_state_1 = "<%- changes_state_1 %>";
+      const changes_state_2 = "<%- changes_state_2 %>";
+      const location_1 = "<%- location_1 %>";
+      const location_2 = "<%- location_2 %>";
+      const category = "<%- category %>";
 
       new Chart(ctx, {
-        type: "bar",
+        type: "line",
         data: {
-          labels: labels.split(","),
+          labels: [
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sept",
+            "Oct",
+            "Nov",
+            "Dec",
+          ],
           datasets: [
             {
-              label: "Number of Crimes",
-              data: data.split(","),
-              backgroundColor: [
-                "rgb(255, 204, 204)",
-"rgb(255, 218, 185)",
-"rgb(175, 238, 238)",
-"rgb(238, 130, 238)",
-"rgb(230, 230, 250)",
-"rgb(255, 229, 204)",
-"rgb(204, 255, 230)",
-"rgb(204, 204, 255)",
-"rgb(255, 255, 204)",
-"rgb(255, 204, 204)",
-
-
-
-              ],
+              label: location_1,
+              data: changes_state_1.split(","),
+              borderColor: "red",
+              hoverOffset: 4,
+            },
+            {
+              label: location_2,
+              data: changes_state_2.split(","),
+              borderColor: "blue",
               hoverOffset: 4,
             },
           ],
